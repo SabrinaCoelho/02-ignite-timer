@@ -1,7 +1,9 @@
 import { HandPalm, Play } from "@phosphor-icons/react";
-import { CountDownContainer, FormContainer, HomeContainer, MinutesAmountInput, Separator, StartCountdownButton, StopCountdownButton, TaskInput } from "./styles";
-import { useEffect, useState } from "react";
-import { NewCycleForm } from "./Components/NewCycleForm";
+import {HomeContainer } from "./styles";
+import { createContext, useState } from "react";
+// import { NewCycleForm } from "./Components/NewCycleForm";
+import { StartCountdownButton, StopCountdownButton } from "./Components/NewCycleForm/styles";
+import { Countdown } from "./Components/Countdown";
 
 interface Cycle{
     id: string;
@@ -11,6 +13,14 @@ interface Cycle{
     interruptedDate?: Date;
     finishedDate?: Date;
 }
+
+interface CyclesContextType {
+    activeCycle: Cycle | undefined;
+    activeCycleId: string | null;
+    markCurrentCycleAsFinished: () => void;
+}
+
+export const CyclesContext = createContext({} as CyclesContextType);
 
 export function Home(){
 
@@ -31,22 +41,10 @@ export function Home(){
 
     const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId);
 
-    
-    function handleCreateNewCycle(data: NewCycleFormData){
-        /* data são os dados dos inputs do form */
-        const newCycle: Cycle = {
-            id: String(new Date().getTime()),
-            task: data.task,
-            minutesAmount: data.minutesAmount,
-            startDate: new Date()
-        }
-        
-        setCycles(prev => [...prev, newCycle]);
-        setActiveCycleId(newCycle.id);
-        reset();
-    }
-
-    function handleInterruptCycle(){
+    function markCurrentCycleAsFinished(){
+        //Por que nao mandar setCycles direto pelo contexto?
+        //Porque ele só existe aqui e para nao precisar tipar esta funcao
+        //na interface, podemos fazer desta maneira tbm.
         setCycles((prev) => prev.map((cycle) => {
             if(cycle.id === activeCycleId){
                 return{...cycle, interruptedDate: new Date()}
@@ -54,43 +52,45 @@ export function Home(){
                 return cycle
             }
         }))
+    }
+    
+    // function handleCreateNewCycle(data: NewCycleFormData){
+    //     /* data são os dados dos inputs do form */
+    //     const newCycle: Cycle = {
+    //         id: String(new Date().getTime()),
+    //         task: data.task,
+    //         minutesAmount: data.minutesAmount,
+    //         startDate: new Date()
+    //     }
+        
+    //     setCycles(prev => [...prev, newCycle]);
+    //     setActiveCycleId(newCycle.id);
+    //     reset();
+    // }
+
+    function handleInterruptCycle(){
+        /* setCycles((prev) => prev.map((cycle) => {
+            if(cycle.id === activeCycleId){
+                return{...cycle, interruptedDate: new Date()}
+            }else{
+                return cycle
+            }
+        })) */
         setActiveCycleId(null);
     }
 
     console.log("->", activeCycle)
     console.log("-->", cycles)
 
-    const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
-    
-    const minutesAmount = Math.floor(currentSeconds / 60);
-    const secondsAmount = currentSeconds % 60;
-    const minutes = String(minutesAmount).padStart(2, "0");
-    const seconds = String(secondsAmount).padStart(2, "0");
-
-    const isSubmitDisabled = watch("task");
-    /*
-    O que é esse register?!
-    function register(nomeDoCampo: string){
-        return{
-            onChange: () => void,
-            onBlur: () => void,
-            onFocus: () => void
-        }
-    }
-
-    */
-
-    useEffect(
-        () => {
-            document.title = `${minutes}:${seconds}`;
-        }, [minutes, seconds]
-    );
-    
+    // const isSubmitDisabled = watch("task");
+   
     return(
         <HomeContainer>
-            <form action="" onSubmit={handleSubmit(handleCreateNewCycle)}>
-                <NewCycleForm/>
-                <CountDownContainer activeCycle={activeCycle}/>
+            <form action="" /* onSubmit={handleSubmit(handleCreateNewCycle)} */>
+                <CyclesContext.Provider value={{activeCycle, activeCycleId, markCurrentCycleAsFinished}}>
+                    {/* <NewCycleForm/> */}
+                    <Countdown />
+                </CyclesContext.Provider>
                 {
                     activeCycle ? (
                         <StopCountdownButton type="button" onClick={handleInterruptCycle}>
@@ -98,7 +98,7 @@ export function Home(){
                             Interromper
                         </StopCountdownButton>
                     ): (
-                        <StartCountdownButton type="submit" disabled={!isSubmitDisabled}>
+                        <StartCountdownButton type="submit" /* disabled={!isSubmitDisabled} */>
                             <Play size={24} />
                             Começar
                         </StartCountdownButton>

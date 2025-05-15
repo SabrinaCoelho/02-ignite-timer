@@ -1,12 +1,39 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CountDownContainer, Separator } from "./styles";
 import { differenceInSeconds } from "date-fns";
+import { CyclesContext } from "../..";
 
 export function Countdown(){
-
+    const {activeCycle, activeCycleId, markCurrentCycleAsFinished} = useContext(CyclesContext);
     const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
 
     const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
+
+    const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
+        
+    const minutesAmount = Math.floor(currentSeconds / 60);
+    const secondsAmount = currentSeconds % 60;
+    const minutes = String(minutesAmount).padStart(2, "0");
+    const seconds = String(secondsAmount).padStart(2, "0");
+
+    
+    /*
+    O que é esse register?!
+    function register(nomeDoCampo: string){
+        return{
+            onChange: () => void,
+            onBlur: () => void,
+            onFocus: () => void
+        }
+    }
+
+    */
+
+    useEffect(
+        () => {
+            document.title = `${minutes}:${seconds}`;
+        }, [minutes, seconds]
+    );
 
     useEffect(() => {
         let interval: number;
@@ -16,15 +43,7 @@ export function Countdown(){
                 const secondsDifference = differenceInSeconds(new Date(), activeCycle.startDate);
                 
                 if(secondsDifference >= totalSeconds){
-                    setCycles((prev) => 
-                        prev.map((cycle) =>{
-                            if(cycle.id === activeCycleId){
-                                return{...cycle, finishedDate: new Date()}
-                            }else{
-                                return cycle
-                            }
-                        })
-                    );
+                    markCurrentCycleAsFinished();
                     setAmountSecondsPassed(totalSeconds);
                     clearInterval(interval);
                 }else{
@@ -37,7 +56,7 @@ export function Countdown(){
             clearInterval(interval);
         }
 
-    }, [activeCycle, totalSeconds, activeCycleId]);
+    }, [activeCycle, totalSeconds, activeCycleId, markCurrentCycleAsFinished]);
 
     return(
         <CountDownContainer>

@@ -7,7 +7,7 @@ interface CountdownProps{
     activeCycle: any;
 }
 
-export function NewCycleForm({{activeCycle}: CountdownProps}){
+export function NewCycleForm({activeCycle}: CountdownProps){
     //zod.object -> estou validando um objeto
     const newCycleFormValidationSchema = z.object({
         task: z.string().min(1, "Informe a tarefa"),
