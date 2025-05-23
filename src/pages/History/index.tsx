@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { Cycle, CyclesContext } from "../../contexts/CyclesContexts";
 import { HistoryConatiner, HistoryList, Status } from "./styles";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 export function History(){
 
@@ -14,10 +16,12 @@ export function History(){
             <HistoryList>
                 <table>
                     <thead>
-                        <th>Tarefa</th>
-                        <th>Duração</th>
-                        <th>Início</th>
-                        <th>Status</th>
+                        <tr>
+                            <th>Tarefa</th>
+                            <th>Duração</th>
+                            <th>Início</th>
+                            <th>Status</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {
@@ -26,16 +30,16 @@ export function History(){
                                     <tr key={cycle.id}>
                                         <td>{cycle.task}</td>
                                         <td>{cycle.minutesAmount} minutos</td>
-                                        <td>{cycle.startDate.toISOString()}</td>
+                                        <td>{formatDistanceToNow(cycle.startDate, {locale: ptBR, addSuffix: true})}</td>
                                         <td>
                                             {
-                                                cycle.finishedDate && <Status statusColor="green">Concluído</Status>
+                                                cycle.finishedDate && (<Status statusColor="green">Concluído</Status>)
                                             }
                                             {
-                                                cycle.interruptedDate && <Status statusColor="red">Interrompido</Status>
+                                                cycle.interruptedDate && (<Status statusColor="red">Interrompido</Status>)
                                             }
                                             {
-                                                (!cycle.finishedDate && !cycle.interruptedDate) && <Status statusColor="yellow">Em andamento</Status>
+                                                !cycle.finishedDate && !cycle.interruptedDate && (<Status statusColor="yellow">Em andamento</Status>)
                                             }
                                         </td>
                                     </tr>

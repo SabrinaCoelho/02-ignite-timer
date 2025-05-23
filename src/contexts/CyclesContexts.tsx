@@ -70,13 +70,13 @@ export function CyclesContextPorvider({children}: CyclesContextProviderProps) {
         }
     
         function interruptCurrentCycle(){
-            /* setCycles((prev) => prev.map((cycle) => {
+            setCycles((prev) => prev.map((cycle) => {
                 if(cycle.id === activeCycleId){
                     return{...cycle, interruptedDate: new Date()}
                 }else{
                     return cycle
                 }
-            })) */
+            }))
             setActiveCycleId(null);
         }
 
