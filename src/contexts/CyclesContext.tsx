@@ -42,27 +42,41 @@ export function CyclesContextPorvider({children}: CyclesContextProviderProps) {
         console.log(state);
         console.log(action);
 
-        if(action.type === "ADD_NEW_CYCLE"){
-            return {
-                ...state,
-                cycles: [...state.cycles, action.payload.newCycle],
-                activeCycleId: action.payload.newCycle.id,
-            }
-        }else if(action.type === "INTERRUPT_CURRENT_CYCLE"){
-            return{
-                ...state,
-                cycles: state.cycles.map((cycle) => {
-                    if(cycle.id === state.activeCycleId){
-                        return{...cycle, interruptedDate: new Date()}
-                    }else{
-                        return cycle
-                    }
-                }),
-                activeCycleId: null
-            }
+        switch(action.type){
+            case "ADD_NEW_CYCLE":
+                return {
+                    ...state,
+                    cycles: [...state.cycles, action.payload.newCycle],
+                    activeCycleId: action.payload.newCycle.id,
+                }
+            case "INTERRUPT_CURRENT_CYCLE":
+                return{
+                    ...state,
+                    cycles: state.cycles.map((cycle) => {
+                        if(cycle.id === state.activeCycleId){
+                            return{...cycle, interruptedDate: new Date()}
+                        }else{
+                            return cycle
+                        }
+                    }),
+                    activeCycleId: null
+                }
+            case "MARK_CURRENT_CYCLE_AS_FINISHED":
+                return{
+                    ...state,
+                    cycles: state.cycles.map((cycle) => {
+                        if(cycle.id === state.activeCycleId){
+                            return{...cycle, finishedDate: new Date()}
+                        }else{
+                            return cycle
+                        }
+                    }),
+                    activeCycleId: null
+                }
+            default:
+                return state;
         }
-
-        return state;
+        
     }, {
         cycles: [],
         activeCycleId: null
@@ -78,13 +92,6 @@ export function CyclesContextPorvider({children}: CyclesContextProviderProps) {
         //Porque ele só existe aqui e para nao precisar tipar esta funcao
         //na interface, podemos fazer desta maneira tbm.
         
-        /* setCycles((prev) => prev.map((cycle) => {
-            if(cycle.id === activeCycleId){
-                return{...cycle, interruptedDate: new Date()}
-            }else{
-                return cycle
-            }
-        })) */
        dispatch({
             type:"MARK_CURRENT_CYCLE_AS_FINISHED",//acao que quero realizar
             payload: {
@@ -113,7 +120,6 @@ export function CyclesContextPorvider({children}: CyclesContextProviderProps) {
             } //objeto da alteracao
         });
         
-        /* setCycles(prev => [...prev, newCycle]); */
         //setActiveCycleId(newCycle.id);
 
         setAmountSecondsPassed(0);
