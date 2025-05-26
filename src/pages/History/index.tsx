@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Cycle, CyclesContext } from "../../contexts/CyclesContexts";
+import { Cycle, CyclesContext } from "../../contexts/CyclesContext";
 import { HistoryConatiner, HistoryList, Status } from "./styles";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";

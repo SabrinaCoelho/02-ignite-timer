@@ -7,7 +7,7 @@ import { Countdown } from "./Components/Countdown";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FormProvider, useForm } from "react-hook-form";
-import { CyclesContext } from "../../contexts/CyclesContexts";
+import { CyclesContext } from "../../contexts/CyclesContext";
 
 //zod.object -> estou validando um objeto
 const newCycleFormValidationSchema = z.object({

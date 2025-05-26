@@ -1,7 +1,7 @@
 import { FormContainer, TaskInput, MinutesAmountInput } from "./styles";
 import { useContext } from "react";
 import { useFormContext } from "react-hook-form";
-import { CyclesContext } from "../../../../contexts/CyclesContexts";
+import { CyclesContext } from "../../../../contexts/CyclesContext";
 
 /* interface CountdownProps{
     activeCycle: any;
