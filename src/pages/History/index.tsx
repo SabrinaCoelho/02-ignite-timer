@@ -11,9 +11,9 @@ export function History(){
     return(
         <HistoryConatiner>
             <h1>Meu Histórico</h1>
-            <pre>
+            {/* <pre>
                 {JSON.stringify(cycles, null, 2)}
-            </pre>
+            </pre> */}
             <HistoryList>
                 <table>
                     <thead>
