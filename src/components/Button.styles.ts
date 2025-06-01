@@ -1,4 +1,4 @@
-import styled, {css} from "styled-components";
+import styled from "styled-components";
 
 export type ButtonVariant = "primary" | "secondary" | "danger" | "success";
 
@@ -6,12 +6,12 @@ interface ButtonContainerprops{
     variant: ButtonVariant
 }
 
-const buttonVariants = {
+/* const buttonVariants = {
     primary: "purple",
     secondary: "orange",
     danger: "red",
     success: "green"
-}
+} */
 
 export const ButtonContainer = styled.button<ButtonContainerprops>`
     width: 160px;
