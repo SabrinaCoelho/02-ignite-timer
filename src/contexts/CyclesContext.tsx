@@ -1,5 +1,7 @@
-import { createContext, ReactNode, useReducer, useState } from "react";
-import { ActionTypes, Cycle, cyclesReducer } from "../reducers/cycles";
+import { createContext, ReactNode, useEffect, useReducer, useState } from "react";
+import { Cycle, cyclesReducer } from "../reducers/cycles/reducer";
+import { addNewCycleAction, interruptCurrentCurrentCycleAction, markCurrentCurrentCycleAsFinishedAction } from "../reducers/cycles/actions";
+import { differenceInSeconds } from "date-fns";
 
 interface CreateCycleData{
     task: string;
@@ -29,25 +31,41 @@ export function CyclesContextPorvider({children}: CyclesContextProviderProps) {
         {
             cycles: [],
             activeCycleId: null
+        },
+        (initialArgs) => {
+            const storedStateAsJSON = localStorage.getItem("@ignite-timer:cycles-state-1.0.0");
+            if(storedStateAsJSON){
+                return JSON.parse(storedStateAsJSON);
+            }
+            return initialArgs;
         }
     );
 
-    const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
+    useEffect(() => {
+        const stateJSON = JSON.stringify(cyclesState);
+        localStorage.setItem("@ignite-timer:cycles-state-1.0.0", stateJSON)
+    }, [cyclesState])
+
     const { cycles, activeCycleId} = cyclesState;
     //const [activeCycleId, setActiveCycleId] = useState<string | null>(null);
     const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId);
+
+    const [amountSecondsPassed, setAmountSecondsPassed] = useState(() => {
+        if(activeCycle){
+            differenceInSeconds(
+                new Date(),
+                new Date(activeCycle.startDate)
+            );
+        }
+        return 0;
+    });
 
     function markCurrentCycleAsFinished(){
         //Por que nao mandar setCycles direto pelo contexto?
         //Porque ele só existe aqui e para nao precisar tipar esta funcao
         //na interface, podemos fazer desta maneira tbm.
         
-       dispatch({
-            type: ActionTypes.MARK_CURRENT_CYCLE_AS_FINISHED,//acao que quero realizar
-            payload: {
-                activeCycleId
-            } //objeto da alteracao
-        });
+       dispatch(markCurrentCurrentCycleAsFinishedAction());
     }
 
     function setSecondsPassed(seconds: number){
@@ -63,12 +81,7 @@ export function CyclesContextPorvider({children}: CyclesContextProviderProps) {
             startDate: new Date()
         }
         
-        dispatch({
-            type: ActionTypes.ADD_NEW_CYCLE,//acao que quero realizar
-            payload: {
-                newCycle
-            } //objeto da alteracao
-        });
+        dispatch(addNewCycleAction(newCycle));
         
         //setActiveCycleId(newCycle.id);
 
@@ -84,12 +97,7 @@ export function CyclesContextPorvider({children}: CyclesContextProviderProps) {
                 return cycle
             }
         })) */
-        dispatch({
-            type: ActionTypes.INTERRUPT_CURRENT_CYCLE,//acao que quero realizar
-            payload: {
-                activeCycleId
-            } //objeto da alteracao
-        });
+        dispatch(interruptCurrentCurrentCycleAction());
         //setActiveCycleId(null);
     }
 
